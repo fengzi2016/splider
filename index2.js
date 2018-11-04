@@ -8,6 +8,7 @@ const workPath = './contents';
 if (!fs.existsSync(workPath)) {
     fs.mkdirSync(workPath)
 }
+
 (async () => {
     const browser = await puppeteer.launch({headless:false});
     const page = await browser.newPage();
@@ -15,10 +16,22 @@ if (!fs.existsSync(workPath)) {
     await page.goto(rootUrl);
     await page.type('#txt_1_value1', '科技', {delay: 100});
     await page.click('#btnSearch');
-    await page.waitFor(10000);
-    const elements = await page.$$('.fz14');
-    const links = elements.map(elements=>{
-        return elements.href;
-    });
-    console.log(links);
+    await page.waitFor(5000);
+    const iframe = await page.frames().find(f => f.name() === 'iframeResult');
+    const selector = '.fz14'
+    try{
+        const elements =  await iframe.$$(selector);
+        console.log(elements)
+        const links = await iframe.evaluate((e) =>{
+        //    const urls = e.map(element => {
+        //        return element.href;
+        //     });
+        //     return urls;
+       
+        },elements);
+         console.log(links);
+    }catch(e){
+        console.log(e)
+    }
+  
 })();
