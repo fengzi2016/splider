@@ -18,17 +18,14 @@ if (!fs.existsSync(workPath)) {
     await page.click('#btnSearch');
     await page.waitFor(5000);
     const iframe = await page.frames().find(f => f.name() === 'iframeResult');
-    const selector = '.fz14'
     try{
-        const elements =  await iframe.$$(selector);
-        console.log(elements)
-        const links = await iframe.evaluate((e) =>{
-        //    const urls = e.map(element => {
-        //        return element.href;
-        //     });
-        //     return urls;
-       
-        },elements);
+        const links = await iframe.evaluate(() =>{
+            const arr = [];
+            document.querySelectorAll('.fz14').forEach(item => {
+                arr.push(item.href);
+            })
+            return arr;
+        });
          console.log(links);
     }catch(e){
         console.log(e)
