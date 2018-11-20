@@ -4,28 +4,18 @@ var iconv = require('iconv-lite');
 var querystring = require('querystring');
 var request = require('superagent');
 
-var question = '科技';
-var requestUrl = 'http://kns.cnki.net/kns/brief/default_result.aspx';
+var requestUrl = 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC100001/';
 request
     .post(requestUrl)
-    .send({
-        txt_1_value1:'科技',
-        txt_1_sel: 'SU$%=|',
-        txt_1_special1: '%',
-        action: 'scdbsearch'
-    })
     .set('accept','json')
     .end((err,res)=>{
-        var links = [];
-        var $ = cheerio.load(res.text);
-        $('.fz14').each(function (element) {
-            console.log('element',element)
-            var $element = $(element);
-            links.push({
-                url:$element.attr('href')
-            })
-        })
-        console.log(links);
+      console.log(res)
+      var html = iconv.decode(Buffer.concat(res),'utf-8');
+      var $ = cheerio.load(html,{decodeEntities:false});
+      $('.sec-first').each((idx,element) => {
+          console.log(element)
+      })
+
     })
 
 // const post_data = querystring.stringify({
