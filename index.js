@@ -6,53 +6,34 @@ var request = require('superagent');
 
 var requestUrl = 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC100001/';
 request
-    .post(requestUrl)
-    .set('accept','json')
-    .end((err,res)=>{
-      console.log(res)
-      var html = iconv.decode(Buffer.concat(res),'utf-8');
-      var $ = cheerio.load(html,{decodeEntities:false});
-      $('.sec-first').each((idx,element) => {
-          console.log(element)
-      })
+    .get(requestUrl)// 转码-将gb2312格式转成utf-8
+    .end(function (err, res) {
+    // 常规的错误处理
+    if (err) {
+      return next(err);
+    }
+    var $ = cheerio.load(res.text,{
+      xmlMode: true // 由于从rss里读取xml，所以这一步一定要有，切记
+    });
+   
+    var d = new Date();
+    var date = d.getFullYear()+"-"+(d.getMonth()+1)+"-"+(d.getDate()); // 取得爬取的日期
+    var topten = { // 设定爬取的json数组
+        date: date,
+        info: []
+      };
+    console.log($('#__p2').text());
+    var json = JSON.stringify(toptens); // json格式解析，这步也是一定要有
 
-    })
-
-// const post_data = querystring.stringify({
-//     txt_1_value1:'科技'
-// })
-// const options = {
-//     host: requestUrl,
-//     method: 'POST',
-//     headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded',
-//          // 'Content-Length': Buffer.byteLength(post_data)
-//       }
-// }
+    fs.writeFile('toptens.json', json, 'utf-8', function(err){
+      if (err) throw err;
+      else console.log('JSON写入成功'+'\r\n' + json)
+    });
+   
+})
 
 
 
 
-// const post_req =  http.request(options,function(res){
-//     var chunks = [];
-//     // res.on('data',function (chunk) {
-//     //     chunks.push(chunk)
-//     // });
-//     // console.log('chunks',chunks)
-//     // res.on('end',function () {
-//     //     var links = [];
-//     //     var html = iconv.decode(Buffer.concat(chunks),'utf-8');
-//     //     var $ = cheerio.load(html,{decodeEntities:false});
-//     //     $('.fz14').each(function (idx,element) {
-//     //         var $element = $(element);
-//     //         links.push({
-//     //             url:$element.attr('href')
-//     //         })
-            
-//     //     })
-//     //     console.log(links)
-//     // })
 
-// })
-// post_req.write(post_data)
-// post_req.end();
+

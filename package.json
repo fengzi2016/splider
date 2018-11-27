@@ -13,6 +13,7 @@
     "http": "0.0.0",
     "iconv-lite": "^0.4.24",
     "puppeteer": "^1.10.0",
-    "superagent": "^4.0.0-beta.5"
+    "superagent": "^4.0.0-beta.5",
+    "sync-request": "^6.0.0"
   }
 }
