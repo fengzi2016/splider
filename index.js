@@ -22,7 +22,7 @@ request
         date: date,
         info: []
       };
-    console.log($('#__p2').text());
+    console.log($('#__p2').text()); // 摘要
     var json = JSON.stringify(toptens); // json格式解析，这步也是一定要有
 
     fs.writeFile('toptens.json', json, 'utf-8', function(err){
