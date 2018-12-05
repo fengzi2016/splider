@@ -10,11 +10,12 @@ const compose = (f,g) => {
 }
 
 let count = 642;
-const url = 'http://www.lis.ac.cn/CN/volumn/volumn_642.shtml';
-const urlsSeletor = 'a[^href="../abstract/"]';
+const baseUrl = 'http://www.lis.ac.cn/CN/volumn/volumn_642.shtml';
+
 
 // 发送请求
 function fecthDataToSeletor(url){
+  console.log(url)
  return request.get(url)
 } 
 // 分离字段
@@ -44,18 +45,23 @@ const readFile = (store) => {
 function getDetials(baseUrl) {
  return fecthDataToSeletor(baseUrl)
   .then(function (res) {
-    var $ = cheerio.load(res.text);
-    // console.log($(urlsSeletor))
-   return $('a[href*="[abstract"]').attr('href');
+   let reg = /(href=")(\.\.\/abstract[^"]*)/g;
+   return res.text.match(reg);
+  })
+ }
+ function getInerDetails(baseUrl){
+  return fecthDataToSeletor(baseUrl)
+  .then(function (res) {
+   const $ = cheerio.load(res.text);
+   return $;
   })
  }
 
-
 // 开始获取
-getDetials(url).then(res => {
-  console.log(res);
+getDetials(baseUrl).then(res => {
   res.forEach(data => {
-    compose(readFile,splitField,fecthDataToSeletor(data));
+    const url = baseUrl.slice(0,6) + data.slice(8);
+    compose(readFile,compose(splitField,compose(getInerDetails,fecthDataToSeletor(url))));
   });
   }
  );
