@@ -1,7 +1,6 @@
 var cheerio = require('cheerio');
 var request = require('superagent');
 var fs = require('fs');
-
 // 组合函数
 const compose = (f,g) => {
   return function(x) {
@@ -10,12 +9,14 @@ const compose = (f,g) => {
 }
 
 let baseUrl;
-let count = 642;
+// 299
+let count = 614;
 let number = 0;
-while(count>640){
+//600
+while(count>=614){
   count --;
   baseUrl = `http://www.lis.ac.cn/CN/volumn/volumn_${count}.shtml`;
-  number += start();
+  start();
 }
 
 
@@ -48,8 +49,11 @@ const splitField = (promise) => {
 const readFile = (promise) => {
   promise.then(store=>{
     if(store.goal===null) return;
-    var json = JSON.stringify(store); // json格式解析，这步也是一定要有
-    fs.appendFile('toptens.json', json, 'utf-8', function(err){
+    var json = JSON.stringify(store);
+    var target = {};
+    target[count] = json;
+    // json格式解析，这步也是一定要有
+    fs.appendFile('toptens.json', target+',', 'utf-8', function(err){
       if (err) throw err;
       // else console.log('JSON写入成功'+'\r\n' + json)
     });
@@ -73,19 +77,16 @@ function getDetials(baseUrl) {
  }
 
 // 开始获取
-function start() {
+function start(){
   getDetials(baseUrl).then(res => {
     res.forEach(data => {
       const url = "http://www.lis.ac.cn/CN/" + data.slice(8);
       const getData = compose(readFile,compose(splitField,getInnerDetails)) ;
       getData(url);
-     
     });
-    number+=res.length;
-    if(count===640) console.log(number)
-    }
-  );
+ })
 }
+ 
 
 
 
